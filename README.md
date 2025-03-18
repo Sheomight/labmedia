@@ -1,19 +1,15 @@
 # labmedia-test
 
 ## Project setup
+Файл для первого задания
 ```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
+src/composables/useFormValidation.ts
 ```
 
-### Compiles and minifies for production
+Файл для второго задания
 ```
-npm run build
+src/composables/useApi.ts
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+* На странице со списком постов после 3 запроса будет падать ошибка и выводиться сообщение о её статусе;
+* На странице создания поста третье поле по дефолту обязательно, но так же можно добавлять/убирать дополнительную валидацию.
