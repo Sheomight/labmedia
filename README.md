@@ -1,6 +1,5 @@
 # labmedia-test
 
-## Project setup
 Файл для первого задания
 ```
 src/composables/useFormValidation.ts
