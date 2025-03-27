@@ -1,19 +1,22 @@
 import { computed, Ref, ref } from 'vue'
 
-export type ValidationRule<T> = (value: T) => string | undefined
+type ValidationRule<T> = (value: T) => string | undefined
+export type ValidationRules<T> = { [K in keyof T]: ValidationRule<T[K]>[] }
+
+type Errors<T> = { [K in keyof T]: string[] }
 
 export function useFormValidation<T extends Record<string, unknown>>(
   fields: Ref<T>,
-  validationRules: Ref<Record<keyof T, ValidationRule<T[keyof T]>[]>>
+  validationRules: Ref<ValidationRules<T>>
 ) {
-  const errors = ref<Record<keyof T, string[]>>({} as Record<keyof T, string[]>)
+  const errors = ref<Errors<T>>({} as Errors<T>)
 
-  const validateField = (fieldKey: keyof T, value: any): void => {
+  const validateField = <K extends keyof T>(fieldKey: K, value: T[K]): void => {
     if (!validationRules.value[fieldKey]) {
       return
     }
 
-    errors.value[fieldKey as string] = []
+    errors.value[fieldKey] = []
     for (const rule of validationRules.value[fieldKey]) {
       const errorMessage = rule(value)
 
@@ -27,7 +30,8 @@ export function useFormValidation<T extends Record<string, unknown>>(
     let valid = true
 
     Object.keys(fields.value).forEach((key) => {
-      validateField(key, fields.value[key])
+      const fieldKey = key as keyof T
+      validateField(key, fields.value[fieldKey])
       if (errors.value[key] && errors.value[key].length) {
         valid = false
       }
@@ -44,9 +48,14 @@ export function useFormValidation<T extends Record<string, unknown>>(
     return false
   })
 
+  const clearErrors = () => {
+    errors.value = {}
+  }
+
   return {
     errors,
     hasErrors,
+    clearErrors,
     validate,
     validateField
   }

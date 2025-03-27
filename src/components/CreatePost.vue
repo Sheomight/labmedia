@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useFormValidation, ValidationRule } from '@/composables/useFormValidation'
+import { useFormValidation, ValidationRules } from '@/composables/useFormValidation'
 import { useApi } from '@/composables/useApi'
 import useValidation from '@/composables/useValidation'
 import { ref, watch } from 'vue'
@@ -9,25 +9,23 @@ interface ICreatePostProps {
   isActive: boolean
 }
 
-type FormKeys = keyof typeof form.value
-
 const form = ref({
   title: '',
   body: '',
-  someField: ''
+  someField: '',
 })
 
 const props = defineProps<ICreatePostProps>()
 
 const { required, minStringLength, hasNumber, hasSpecialSymbol, isEmail } = useValidation()
 
-const validationRules = ref<Record<FormKeys, ValidationRule<any>[]>>({
+const validationRules = ref<ValidationRules<typeof form.value>>({
   title: [required, minStringLength],
   body: [required],
-  someField: [required]
+  someField: [required],
 })
 
-const { validate, validateField, errors, hasErrors } = useFormValidation(form, validationRules)
+const { validate, validateField, clearErrors, errors, hasErrors } = useFormValidation(form, validationRules)
 const { fetchData, isSuccess, isLoading } = useApi()
 
 const [api, contextHolder] = notification.useNotification()
@@ -43,9 +41,9 @@ const handleClear = () => {
   form.value = {
     title: '',
     body: '',
-    someField: ''
+    someField: '',
   }
-  errors.value = {} as Record<FormKeys, string[]>
+  clearErrors()
 }
 
 const createPost = async () => {
